@@ -141,7 +141,19 @@ class DataHandler(object):
 																	float(targetVoxelWidth[2])/patch.shape[2]))
 						np.ndarray.tofile(patch, "{}{}/{}-{}".format(savedir, 2, f[0:-4], i))
 
-	def generateRandomSamples():
+	def load_samples(self, sampleDir, shape):
+		print("Loading false nodules")
+		falseNodules = [(np.fromfile("{}0/{}".format(sampleDir, f)).reshape(shape), 1) for f in os.listdir("{}0/".format(sampleDir))]
+		print("Loading true nodules")
+		trueNodules = [(np.fromfile("{}1/{}".format(sampleDir, f)).reshape(shape), 1) for f in os.listdir("{}1/".format(sampleDir))]
+		print("Loading random samples")
+		randomSamples = [(np.fromfile("{}2/{}".format(sampleDir, f)).reshape(shape), 0) for f in os.listdir("{}2/".format(sampleDir))]
+		samples = falseNodules + trueNodules + randomSamples
+		random.shuffle(samples)
+		xs = [x[0] for x in samples]
+		ys = [y[1] for y in samples]
+
+		return np.asarray(xs), np.asarray(ys)
 		pass
 
 	def extractPatch(self, voxelCoord, voxelWidth, numpyImage):
@@ -176,62 +188,52 @@ class DataHandler(object):
 
 def main():
 	handler = DataHandler()
+
 	'''
 	shape = {}
 	spacingg = {}
 	mhd = re.compile(r".*\.mhd")
-	files = [f for f in os.listdir("/media/amos/My Passport/Data/luna/subset0/subset0/") if mhd.match(f) != None]
+	files = [f for f in os.listdir("/media/amos/My Passport/Data/luna/subset0/") if mhd.match(f) != None]
+
+	z = []
+	x = []
+	y = []
+
 	for f in files:
-		img, origin, spacing = handler.load_itk_image("/media/amos/My Passport/Data/luna/subset0/subset0/{}".format(f))
+		print(f)
+		img, origin, spacing = handler.load_itk_image("/media/amos/My Passport/Data/luna/subset0/{}".format(f))
 		if not shape.has_key(str(img.shape)):
 			shape[str(img.shape)] = 0;
 		if not spacingg.has_key(str(spacing)):
 			spacingg[str(spacing)] = 0;
 		shape[str(img.shape)] += 1;
 		spacingg[str(spacing)] += 1;
-
-	print(shape)
-	print(spacingg)
+		z += [spacing[0]]
+		x += [spacing[1]]
+		y += [spacing[2]]
 	'''
 
-	handler.generateSamples("/media/amos/My Passport/Data/luna/subset0/", "data/csv/candidates.csv", "/media/amos/My Passport/Data/luna/samples/", (15,15,15), (15,20,20))
-	fileName = "1.3.6.1.4.1.14519.5.2.1.6279.6001.148447286464082095534651426689"
-	cands = handler.readCSV("data/csv/candidates.csv")
-	numpyImage, numpyOrigin, numpySpacing = handler.load_itk_image("data/images/{}.mhd".format(fileName))
-	np.save("numpyimg", numpyImage)
-	a = np.fromfile("samples/1/1.3.6.1.4.1.14519.5.2.1.6279.6001.148447286464082095534651426689-1").reshape(15,20,20)
-	print(a.shape)
-	for z in range(a.shape[0]):
-		plt.imshow(a[z], cmap='gray')
+
+	z = [1.7999999523162842, 2.5, 2.5, 1.25, 0.625, 1.7999999523162842, 2.5, 0.5, 2.5, 0.69999998807907104, 1.25, 1.25, 1.0, 0.5, 2.5, 1.0, 2.0, 0.5, 1.0, 2.5, 2.5, 2.5, 1.0, 1.0, 1.25, 1.7999999523162842, 2.5, 2.5, 1.7999999523162842, 1.0, 1.25, 1.0, 2.5, 1.25, 1.7999999523162842, 1.0, 0.625, 1.25, 1.25, 2.5, 1.0, 2.5, 2.5, 0.625, 0.625, 1.25, 1.25, 1.2499998807907104, 0.625, 1.0, 2.5, 2.5, 2.5, 2.5, 2.5, 0.625, 0.625, 1.25, 1.7999999523162842, 2.5, 1.0000001192092896, 2.5, 1.0, 1.7999999523162842, 1.0, 2.5, 2.5, 0.625, 0.625, 1.25, 1.25, 2.5, 2.5, 2.5, 0.69999998807907104, 0.75, 2.5, 2.5, 0.625, 2.5, 1.25, 1.0, 2.5, 2.5, 2.0, 1.0, 2.0, 0.5, 0.69999998807907104]
+	x = [0.7421875, 0.7617189884185791, 0.7421879768371582, 0.54882800579071045, 0.7421879768371582, 0.72265625, 0.55664098262786865, 0.607421875, 0.703125, 0.6171875, 0.61523401737213135, 0.859375, 0.7421875, 0.513671875, 0.7226560115814209, 0.572265625, 0.6640620231628418, 0.73046875, 0.78125, 0.703125, 0.7421879768371582, 0.61523401737213135, 0.681640625, 0.78125, 0.69335901737213135, 0.7421875, 0.69726598262786865, 0.9765620231628418, 0.68359375, 0.6171875, 0.65429699420928955, 0.61328125, 0.625, 0.65429699420928955, 0.6640625, 0.611328125, 0.6054689884185791, 0.6210939884185791, 0.9492189884185791, 0.6171879768371582, 0.7109375, 0.6640620231628418, 0.78125, 0.5859379768371582, 0.78125, 0.5859379768371582, 0.703125, 0.52539098262786865, 0.703125, 0.681640625, 0.703125, 0.5859379768371582, 0.859375, 0.703125, 0.78125, 0.703125, 0.625, 0.59570300579071045, 0.64453125, 0.78125, 0.67578125, 0.78125, 0.78125, 0.5859375, 0.578125, 0.6445310115814209, 0.703125, 0.8203120231628418, 0.7226560115814209, 0.65429699420928955, 0.94335901737213135, 0.7421879768371582, 0.859375, 0.6445310115814209, 0.537109375, 0.638671875, 0.703125, 0.8203120231628418, 0.703125, 0.8203120231628418, 0.859375, 0.5234375, 0.78125, 0.59960901737213135, 0.6640620231628418, 0.744140625, 0.703125, 0.63671875, 0.65234375]
+	y  = [0.7421875, 0.7617189884185791, 0.7421879768371582, 0.54882800579071045, 0.7421879768371582, 0.72265625, 0.55664098262786865, 0.607421875, 0.703125, 0.6171875, 0.61523401737213135, 0.859375, 0.7421875, 0.513671875, 0.7226560115814209, 0.572265625, 0.6640620231628418, 0.73046875, 0.78125, 0.703125, 0.7421879768371582, 0.61523401737213135, 0.681640625, 0.78125, 0.69335901737213135, 0.7421875, 0.69726598262786865, 0.9765620231628418, 0.68359375, 0.6171875, 0.65429699420928955, 0.61328125, 0.625, 0.65429699420928955, 0.6640625, 0.611328125, 0.6054689884185791, 0.6210939884185791, 0.9492189884185791, 0.6171879768371582, 0.7109375, 0.6640620231628418, 0.78125, 0.5859379768371582, 0.78125, 0.5859379768371582, 0.703125, 0.52539098262786865, 0.703125, 0.681640625, 0.703125, 0.5859379768371582, 0.859375, 0.703125, 0.78125, 0.703125, 0.625, 0.59570300579071045, 0.64453125, 0.78125, 0.67578125, 0.78125, 0.78125, 0.5859375, 0.578125, 0.6445310115814209, 0.703125, 0.8203120231628418, 0.7226560115814209, 0.65429699420928955, 0.94335901737213135, 0.7421879768371582, 0.859375, 0.6445310115814209, 0.537109375, 0.638671875, 0.703125, 0.8203120231628418, 0.703125, 0.8203120231628418, 0.859375, 0.5234375, 0.78125, 0.59960901737213135, 0.6640620231628418, 0.744140625, 0.703125, 0.63671875, 0.65234375]
+
+
+	print(np.percentile(z, 50))
+	print(np.percentile(x, 50))
+	print(np.percentile(y, 50))
+
+
+
+	#handler.generateSamples("/media/amos/My Passport/Data/luna/subset0/", "data/csv/candidates.csv", "/media/amos/My Passport/Data/luna/samples/", (15,15,15), (15,20,20))
+	#xs, ys = handler.load_samples("samples/", (1, 16,16,10))
+
+
+	#for z in range(xs.shape[2]):
+		#plt.imshow(xs[0][0][z], cmap='gray')
 		#plt.show()
 
-	#handler.plot_3d(numpyImage)
-	print(numpyImage)
-	print(numpyOrigin)
-	print(numpyImage.shape)
-	print(numpySpacing)
-	for cand in cands[1:]:
 
-		if cand[0] == fileName and cand[4] == '1':
-			worldCoord = np.asarray([float(cand[3]), float(cand[2]), float(cand[1])])
-			voxelCoord = handler.worldToVoxelCoord(worldCoord, numpyOrigin, numpySpacing)
-			voxelWidth = 65
-			print(voxelCoord)
-			patch = numpyImage[100:150, int(voxelCoord[1]-voxelWidth/2):int(voxelCoord[1]+voxelWidth/2),int(voxelCoord[2]-voxelWidth/2):int(voxelCoord[2]+voxelWidth/2)]
-			patch = handler.normalizePlanes(patch)
 
-			outputDir = "patches/"
-			#plt.imshow(patch, cmap='gray')
-			#plt.show()
-			#plt.imshow(scipy.ndimage.interpolation.rotate(patch, 30), cmap='gray')
-			#plt.show()
-			#plt.imshow(scipy.misc.imresize(patch, (40,50,50), interp='bilinear'), cmap='gray')
-			#plt.show()
-			print(patch.shape)
-			patch = scipy.ndimage.interpolation.zoom(patch, (1.5,1.5,1.6))
-			print(patch)
-			print(patch.shape)
-			#plt.imshow(scipy.misc.imresize(patch, (85,85,85), interp='bilinear'), cmap='gray')
-			#plt.show()
-			#Image.fromarray(patch*255).convert('L').save("bla")
-main()
+if __name__ == "__main__":
+	main()
