@@ -17,6 +17,7 @@ from keras import backend as K
 from Data import DataHandler
 from keras.models import model_from_json
 K.set_image_dim_ordering('th')
+from keras.layers.convolutional import Conv2DTranspose
 
 def saveModel(mod, targetDir):
     #serialize model to JSON
