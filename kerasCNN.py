@@ -8,16 +8,15 @@ from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.constraints import maxnorm
 from keras.optimizers import SGD
-from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import Conv3D
-from keras.layers.convolutional import MaxPooling2D
 from keras.layers.convolutional import MaxPooling3D
 from keras.utils import np_utils
 from keras import backend as K
 from Data import DataHandler
 from keras.models import model_from_json
-K.set_image_dim_ordering('th')
+from keras.layers.convolutional import UpSampling3D
 from keras.layers.convolutional import Conv2DTranspose
+# K.set_image_dim_ordering('th')
 
 def saveModel(mod, targetDir):
     #serialize model to JSON

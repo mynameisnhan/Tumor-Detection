@@ -4,12 +4,7 @@ import csv
 import os
 import re
 import random
-from PIL import Image
-import matplotlib.pyplot as plt
-from skimage import measure, morphology
 import scipy
-
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
 class DataHandler(object):
@@ -162,29 +157,6 @@ class DataHandler(object):
 							int(voxelCoord[2]-voxelWidth[2]/2):int(voxelCoord[2]+voxelWidth[2]/2)]
 		patch = self.normalizePlanes(patch)
 		return patch
-
-	def plot_3d(self, image, threshold=-300):
-    	# Position the scan upright,
-    	# so the head of the patient would be at the top facing the camera
-		p = image.transpose(2,1,0)
-
-		verts, faces = measure.marching_cubes_classic(p, threshold)
-
-		fig = plt.figure(figsize=(10, 10))
-		ax = fig.add_subplot(111, projection='3d')
-
-		# Fancy indexing: `verts[faces]` to generate a collection of triangles
-		mesh = Poly3DCollection(verts[faces], alpha=0.70)
-		face_color = [0.45, 0.45, 0.75]
-		mesh.set_facecolor(face_color)
-		ax.add_collection3d(mesh)
-
-		ax.set_xlim(0, p.shape[0])
-		ax.set_ylim(0, p.shape[1])
-		ax.set_zlim(0, p.shape[2])
-
-		plt.show()
-
 
 def main():
 	handler = DataHandler()
