@@ -1,1 +1,1 @@
-# Tumor-Detection
+# Deep Learning and Graphical Models
